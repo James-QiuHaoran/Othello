@@ -74,7 +74,7 @@ Othello, also named Reversi, is a strategy board game between the player and an 
 \end{figure}
 \\
 \noindent
-\textbf{Players}: The game is a two-player game. One is the user, and the other is the computer. The player places black disks while the computer places white ones. The user is the first to play and then two players place disks alternatively. If one of the two players does not have any legal moves, then this player pass his turn to the other player.
+\textbf{Players}: The game is a two-player game. One is the user, and the other is the computer. The player places black disks while the computer places white ones. The user (black) is the first to play and then two players place disks alternatively. If one of the two players does not have any legal moves, then this player pass his turn to the other player.
 \\\\
 \textbf{Actions}: Each player should place the disk to a position where the unplaced one can surround disk(s) with another same-color disk horizontally, vertically, or diagonally. In figure 1, the legal movements for the black are marked by cross signs.
 \\\\
@@ -96,8 +96,14 @@ The initial state, actions, and result(transition model) define the game tree fo
 
 \section{Program Architecture}
 
+The program application uses PyGame as its game engine. The whole flow is then divided into three layers. The first layer is the game engine, which the second layer, i.e. the game logic is based on. The third layer is the implementation of Artificial Intelligence algorithms, which can be accessed by the second layer.
 
-\section{Others}
+\subsection{Why PyGame?}
+The pygame library is an open-source module for the Python programming language specifically intended to help programmers make games and other multimedia applications. Built on top of the highly portable SDL (Simple DirectMedia Layer) development library, pygame can run across many platforms and operating systems.\\\\
+\noindent
+By using the pygame module, programmers can control the logic and graphics of their games without worrying about the backend complexities required for working with video and audio.
+
+\section{Instructions on How to Run the Application}
 
 
 \begin{thebibliography}{}
