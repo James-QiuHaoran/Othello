@@ -15,7 +15,7 @@ Keep it simple!
 
 Game engine handles all I/O events, repaints the board and manages games.
 
-### Component Two: Game Logic
+### Component Two: Game Logic Implementation
 
 All game logic will be handled by othello.py.
 
