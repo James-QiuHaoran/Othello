@@ -1,3 +1,12 @@
+class GameError(Exception):
+	pass
+
+class IllegalMove(GameError):
+	pass
+
+class GameRuleError(GameError):
+	pass
+
 class Othello(object):
 	# 0 - Empty
 	# 1 - White (Player 1)
@@ -17,18 +26,56 @@ class Othello(object):
 		self.board[4][4] = 1
 
 		# setup AI
-		# TODO
+		self.useAI = True
+		# self.ai = ai.gameAI(self)
+		
+		self.has_changed = True
+		self.AIReady = False
 
 	def playerMove(self, x, y):
-		pass
+		# if the game is over or not player's turn
+		if self.victory != 0 or (self.useAI and self.player != 1):
+			return
+
+		self.performMove(x, y)
+
+		# AI is ready to move
+		if self.useAI:
+			self.AIReady = True
 
 	def performMove(self, x, y):
-		pass
+		# check whether the block has been occupied
+		if self.board[x][y] != 0:
+			raise IllegalMove("Block has already been occupied!")
+		else:
+			# place the piece and flip necessary pieces
+			self.placePiece(x, y)
+
+			# check game ending
+			allTiles = [item for sublist in self.board for item in sublist]
+	        emptyTiles = sum(1 for tile in allTiles if tile == 0)
+	        whiteTiles = sum(1 for tile in allTiles if tile == 1)
+	        blackTiles = sum(1 for tile in allTiles if tile == 2)
+	        
+	        # no moves left to make
+	        if whiteTiles < 1 or blackTiles < 1 or emptyTiles < 1:
+	            self.endGame()
+	            return
+	        
+	        # check available moves
+	        movesFound = self.moveCanBeMade()
+	        if not movesFound:
+	            self.endGame()
+	            return
+	        
+	        # alternate between player 1 and 2
+	        self.player = 3 - self.player
+	        self.has_changed = True
 
 	def moveCanBeMade(self):
 		pass
 
-	def aiMove(self):
+	def AIMove(self):
 		pass
 
 	def endGame(self):
