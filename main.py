@@ -65,8 +65,8 @@ class Game_Engine(object):
 				self.drawBoard()
 				self.game.changed = False
 			
-			# if self.game.AIReady:
-			#     self.game.AIMove()
+			if self.game.AIReady:
+			     self.game.AIMove()
 
 			self.clock.tick(FRAME_PER_SECOND)
 		quitGame()
@@ -124,7 +124,6 @@ class Game_Engine(object):
 			del(self.keys_down[event.key])
 
 	def mousedownHandler(self, event):
-		# do not need this
 		pass
 
 	def mouseupHandler(self, event):
@@ -146,7 +145,6 @@ class Game_Engine(object):
 			raise
 
 	def mousemoveHandler(self, event):
-		# do not need this
 		pass
 
 if __name__ == '__main__':

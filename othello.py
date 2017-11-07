@@ -1,10 +1,4 @@
-class GameError(Exception):
-	pass
-
-class IllegalMove(GameError):
-	pass
-
-class GameRuleError(GameError):
+class IllegalMove(Exception):
 	pass
 
 class Othello(object):
@@ -29,7 +23,7 @@ class Othello(object):
 		self.useAI = True
 		# self.ai = ai.gameAI(self)
 		
-		self.has_changed = True
+		self.hasChanged = True
 		self.AIReady = False
 
 	def playerMove(self, x, y):
@@ -59,27 +53,70 @@ class Othello(object):
 	        
 	        # no moves left to make
 	        if whiteTiles < 1 or blackTiles < 1 or emptyTiles < 1:
-	            self.endGame()
+	            self.endGame(whiteTiles, blackTiles)
 	            return
 	        
 	        # check available moves
 	        movesFound = self.moveCanBeMade()
 	        if not movesFound:
-	            self.endGame()
+	            self.endGame(whiteTiles, blackTiles)
 	            return
 	        
 	        # alternate between player 1 and 2
 	        self.player = 3 - self.player
-	        self.has_changed = True
+	        self.hasChanged = True
 
 	def moveCanBeMade(self):
-		pass
+		movesFound = False
+		for row in range(0, 8):
+			for col in range(0, 8):
+				if movesFound:
+					continue
+				elif self.board[row][col] == 0:
+					status = self.placePiece(row, col, AUTOMODE=False)
+					if status > 0:
+						movesFound = True
+		return movesFound
 
 	def AIMove(self):
 		pass
 
-	def endGame(self):
-		pass
+	def endGame(self, whiteTiles, blackTiles):
+		if whiteTiles > blackTiles:
+			self.victory = 1
+		elif whiteTiles < blackTiles:
+			self.victory = 2
+		else:
+			self.victory = -1
+		self.hasChanged = True
 
-	def placePiece(self, x, y, live_mode=True):
-		pass
+	""" AUTOMODE: 
+		- True for board flipping after a piece is put by the player
+		- False for available moves checking
+	"""
+	def placePiece(self, row, col, AUTOMODE=True):
+		if AUTOMODE:
+			self.board[row][col] = self.player
+		count = 0  # record number of flips
+
+		# record current row and column
+		__column = self.board[row]
+		__row = [self.board[i][col] for i in range(0,8)]
+
+		# check up direction
+		if self.player in __column[:col]:
+			pass
+
+		# check down direction
+		if self.player in __column[col:]:
+			pass
+
+		# check left direction
+		if self.player in __row[:row]:
+			pass
+
+		# check right direction
+		if self.player in __row[row:]:
+			pass
+
+		# check along diagonal directions
