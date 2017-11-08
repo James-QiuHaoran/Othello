@@ -21,10 +21,10 @@ class Othello(object):
 
 		# setup AI
 		self.useAI = True
-		# self.ai = ai.gameAI(self)
+		self.ai = ai.GameAI(self)
 		
 		self.hasChanged = True
-		self.AIReady = False
+		self.AIReadyToMove = False
 
 	def playerMove(self, x, y):
 		# if the game is over or not player's turn
@@ -35,7 +35,7 @@ class Othello(object):
 
 		# AI is ready to move
 		if self.useAI:
-			self.AIReady = True
+			self.AIReadyToMove = True
 
 	def performMove(self, x, y):
 		# check whether the block has been occupied
@@ -79,7 +79,8 @@ class Othello(object):
 		return movesFound
 
 	def AIMove(self):
-		pass
+		self.ai.move()
+		self.AIReadyToMove = False
 
 	def endGame(self, whiteTiles, blackTiles):
 		if whiteTiles > blackTiles:
