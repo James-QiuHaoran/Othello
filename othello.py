@@ -73,7 +73,7 @@ class Othello(object):
 				if movesFound:
 					continue
 				elif self.board[row][col] == 0:
-					status = self.placePiece(row, col, AUTOMODE=False)
+					status = self.placePiece(row, col, PLAYMODE=False)
 					if status > 0:
 						movesFound = True
 		return movesFound
@@ -90,12 +90,13 @@ class Othello(object):
 			self.victory = -1
 		self.hasChanged = True
 
-	""" AUTOMODE: 
+	""" return: the number of flips given that (row, col) will be occupied by player.
+		param: PLAYMODE: 
 		- True for board flipping after a piece is put by the player
 		- False for available moves checking
 	"""
-	def placePiece(self, row, col, AUTOMODE=True):
-		if AUTOMODE:
+	def placePiece(self, row, col, PLAYMODE=True):
+		if PLAYMODE:
 			self.board[row][col] = self.player
 		count = 0  # record number of flips
 
@@ -105,18 +106,216 @@ class Othello(object):
 
 		# check up direction
 		if self.player in __column[:col]:
-			pass
+			changes = []
+			searchCompleted = False
+
+			for i in range(col-1, -1, -1):
+				if searchCompleted:
+					continue
+				piece = __column[i]
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append(i)
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i in changes:
+						self.board[row][i] = self.player
 
 		# check down direction
 		if self.player in __column[col:]:
-			pass
+			changes = []
+			searchCompleted = False
+
+			for i in range(col+1, 8, 1):
+				if searchCompleted:
+					continue
+				piece = __column[i]
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append(i)
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i in changes:
+						self.board[row][i] = self.player
 
 		# check left direction
 		if self.player in __row[:row]:
-			pass
+			changes = []
+			searchCompleted = False
+
+			for i in range(row-1, -1, -1):
+				if searchCompleted:
+					continue
+				piece = __row[i]
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append(i)
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i in changes:
+						self.board[i][col] = self.player
 
 		# check right direction
 		if self.player in __row[row:]:
-			pass
+			changes = []
+			searchCompleted = False
+
+			for i in range(row+1, 8, 1):
+				if searchCompleted:
+					continue
+				piece = __row[i]
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append(i)
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i in changes:
+						self.board[i][col] = self.player
 
 		# check along diagonal directions
+		# upper-left direction
+		i = 0
+		ulDiagonal = []
+		while row - i >= 0 and col - i >= 0:
+			ulDiagonal.append(board[row-i][col-i])
+			i -= 1
+		if self.player in ulDiagonal:
+			changes = []
+			searchCompleted = False
+
+			for i in len(ulDiagonal):
+				piece = ulDiagonal[i]
+				if searchCompleted:
+					continue
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append((row-i, col-i))
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i,j in changes:
+						self.board[i][j] = self.player
+
+		# upper-right direction
+		i = 0
+		urDiagonal = []
+		while row + i < 8 and col - i >= 0:
+			urDiagonal.append(board[row+i][col-i])
+		if self.player in urDiagonal:
+			changes = []
+			searchCompleted = False
+
+			for i in len(urDiagonal):
+				piece = urDiagonal[i]
+				if searchCompleted:
+					continue
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append((row-i, col+i))
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i,j in changes:
+						self.board[i][j] = self.player
+
+		# lower-left direction
+		i = 0
+		llDiagonal = []
+		while row - i >= 0 and col + i < 8:
+			llDiagonal.append(board[row-i][col+i])
+		if self.player in llDiagonal:
+			changes = []
+			searchCompleted = False
+
+			for i in len(llDiagonal):
+				piece = llDiagonal[i]
+				if searchCompleted:
+					continue
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append((row-i, col+i))
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i,j in changes:
+						self.board[i][j] = self.player
+
+		# lower-right direction
+		i = 0
+		lrDiagonal = []
+		while row + i < 8 and col + i < 8:
+			lrDiagonal.append(board[row+i][col+i])
+		if self.player in lrDiagonal:
+			changes = []
+			searchCompleted = False
+
+			for i in len(lrDiagonal):
+				piece = lrDiagonal[i]
+				if searchCompleted:
+					continue
+				if piece == 0:
+					changes = []
+					searchCompleted = True
+				elif counter == self.player:
+					searchCompleted = True
+				else: 
+					changes.append((row+i, col+i))
+
+			# perform flippings
+			if searchCompleted:
+				count += len(changes)
+				if PLAYMODE:
+					for i,j in changes:
+						self.board[i][j] = self.player
+
+		if count == 0 and PLAYMODE:
+			self.board[row][col] = 0
+			raise IllegalMove("Placing piece at (" + str(row) + ", " + str(col) + ") does not have any flips!")
+
+		return count
