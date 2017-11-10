@@ -106,11 +106,11 @@ class Game_Engine(object):
 		
 		# game ending check
 		if self.game.victory == -1:
-			self.drawText("Draw! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 70, 10, (255, 128, 0))
+			self.drawText("Draw! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
 		elif self.game.victory == 1:
-			self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 70, 10, (255, 128, 0))
+			self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
 		elif self.game.victory == 2:
-			self.drawText("Black Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 70, 10, (255, 128, 0))
+			self.drawText("Black Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 55, 10, (255, 128, 0))
 
 		# update display
 		pygame.display.update()

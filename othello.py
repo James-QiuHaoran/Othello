@@ -22,8 +22,10 @@ class Othello(object):
 		self.board[4][3] = 2
 		self.board[4][4] = 1
 
-		# setup AI
+		# set useAI = False to disable AI opponent - two-player mode
 		self.useAI = False
+
+		# set up AI - player-computer mode
 		self.ai = ai.GameAI(self)
 		
 		self.changed = True
@@ -36,8 +38,8 @@ class Othello(object):
 
 		self.performMove(x, y)
 
-		# AI is ready to move
-		if self.useAI:
+		# AI's turn and AI is ready to move
+		if self.useAI and self.player == 2:
 			self.AIReadyToMove = True
 
 	def performMove(self, x, y):
@@ -62,23 +64,21 @@ class Othello(object):
 				self.endGame(whiteTiles, blackTiles)
 				return
 			
-			# check available moves
-			movesFound = self.moveCanBeMade(self.player)
+			# check available moves of its opponent
+			movesFound = self.moveCanBeMade(3 - self.player)
 			if not movesFound:
-				movesFound = self.moveCanBeMade(3 - self.player)
+				# opponent cannot move, do not alternate
+				movesFound = self.moveCanBeMade(self.player)
 				if not movesFound:
-					# the opponent cannot move either
+					# this player cannot move either, end game
 					self.endGame(whiteTiles, blackTiles)
 					return
 				else:
-					# alternate between player 1 and 2
-					self.player = 3 - self.player
-					self.changed = True
-					return
-
-			# alternate between player 1 and 2
-			self.player = 3 - self.player
-			self.changed = True
+					pass
+			else:
+				# alternate between player 1 and 2
+				self.player = 3 - self.player
+				self.changed = True
 
 	def moveCanBeMade(self, playerID):
 		movesFound = False
