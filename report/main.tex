@@ -87,7 +87,7 @@ Othello, also named Reversi, is a strategy board game between the player and an 
 The initial state, actions, and result(transition model) define the game tree for Othello - a tree where the nodes are game states and the edges are moves. It's also called a search tree is it's superimposed on the full game tree, and examines enough nodes to allow a player to determine what move to make.
 
 
-\section{Methodology}
+\section{Artificial Intelligence Methodology}
 \subsection{Search Engine}
 \subsection{$\alpha$-$\beta$ Pruning}
 \subsection{Heuristics Applied}
@@ -96,12 +96,19 @@ The initial state, actions, and result(transition model) define the game tree fo
 
 \section{Program Architecture}
 
-The program application uses PyGame as its game engine. The whole flow is then divided into three layers. The first layer is the game engine, which the second layer, i.e. the game logic is based on. The third layer is the implementation of Artificial Intelligence algorithms, which can be accessed by the second layer.
+The program application uses PyGame as its game engine. The whole flow is then divided into three layers. The first layer is the game engine, which the second layer, i.e. the game logic, is based on. The third layer is the implementation of Artificial Intelligence algorithms, which can be accessed by the second layer.
 
-\subsection{Why PyGame?}
+\subsection{View Layer - Why PyGame?}
 The pygame library is an open-source module for the Python programming language specifically intended to help programmers make games and other multimedia applications. Built on top of the highly portable SDL (Simple DirectMedia Layer) development library, pygame can run across many platforms and operating systems.\\\\
 \noindent
 By using the pygame module, programmers can control the logic and graphics of their games without worrying about the backend complexities required for working with video and audio.
+
+\subsection{Model \& Control Layer - Game Flow}
+Module othello with class Othello implements the game flow. Attribute "useAI" determines whether AI could be used or not. If the attribute is set to false, then this is a two-player Othello, otherwise, this is a computer-player Othello.\\\\
+\noindent
+Attribute "player" determines who is holding the turn, 1 (white) represents the player 1, and 2 (two) represents player 2 or the AI. Before the player click a block, the model will first check whether there's available movement. If there is, then the player could move. If it's a valid move, then flipping of the pieces will be performed, otherwise, the player could see there's no change in the board, i.e. he or she should give a valid move and then the other player (AI) could move.\\\\
+\noindent
+If two players cannot move, game over.
 
 \section{Instructions on How to Run the Application}
 
