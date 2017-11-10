@@ -47,7 +47,7 @@ class Game_Engine(object):
 		while True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
-					quitGame()
+					self.quitGame()
 				elif event.type == pygame.KEYDOWN:
 					self.keydownHandler(event)
 				elif event.type == pygame.KEYUP:
@@ -65,14 +65,14 @@ class Game_Engine(object):
 				self.drawBoard()
 				self.game.changed = False
 			
-			if self.game.AIReady:
+			if self.game.AIReadyToMove:
 			     self.game.AIMove()
 
 			self.clock.tick(FRAME_PER_SECOND)
-		quitGame()
+		self.quitGame()
 
-	def drawText(self, text, font, screen, x, y):
-		textObj = font.render(text, 1, (0,0,0))
+	def drawText(self, text, font, screen, x, y, rgb):
+		textObj = font.render(text, 1, (rgb[0],rgb[1],rgb[2]))
 		textRect = textObj.get_rect()
 		textRect.topleft = (x, y)
 		screen.blit(textObj, textRect)
@@ -86,8 +86,8 @@ class Game_Engine(object):
 		menu = pygame.Rect(0, 8 * BLOCK_SIZE, WINDOW_WIDTH, 20)
 		pygame.draw.rect(self.screen, (255, 255, 255), menu)
 		self.menuFont = pygame.font.SysFont("comicsansms", 15)
-		self.drawText("Restart", self.menuFont, self.screen, WINDOW_WIDTH / 2 - 80, 8 * BLOCK_SIZE - 1)
-		self.drawText("Exit", self.menuFont, self.screen, WINDOW_WIDTH / 2 + 20, 8 * BLOCK_SIZE - 1)
+		self.drawText("Restart", self.menuFont, self.screen, WINDOW_WIDTH / 2 - 80, 8 * BLOCK_SIZE - 1, (0, 0, 0))
+		self.drawText("Exit", self.menuFont, self.screen, WINDOW_WIDTH / 2 + 20, 8 * BLOCK_SIZE - 1, (0, 0, 0))
 
 		# draw blocks and tiles
 		for row in range(0, 8):
@@ -106,11 +106,11 @@ class Game_Engine(object):
 		
 		# game ending check
 		if self.game.victory == -1:
-			self.drawText("Draw!", self.font, self.screen, 95, 10)
+			self.drawText("Draw! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 100, 10, (255, 128, 0))
 		elif self.game.victory == 1:
-			self.drawText("White Won!", self.font, self.screen, 95, 10)
+			self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 100, 10, (255, 128, 0))
 		elif self.game.victory == 2:
-			self.drawText("Black Won!", self.font, self.screen, 95, 10)
+			self.drawText("Black Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 100, 10, (255, 128, 0))
 
 		# update display
 		pygame.display.update()
@@ -129,20 +129,23 @@ class Game_Engine(object):
 	def mouseupHandler(self, event):
 		x, y = event.pos
 
-		if x >= WINDOW_WIDTH / 2 - 80 and x <= WINDOW_WIDTH / 2 - 80 + self.menuFont.size("Restart")[0] and y > 8 * BLOCK_SIZE:
+		# tested - need to change if window size has been changed
+		if x >= 115 and x <= 175 and y >= 8 * BLOCK_SIZE:
 			self.newGame()
 		elif x >= WINDOW_WIDTH / 2 + 20 and x  <= WINDOW_WIDTH / 2 + 20 + self.menuFont.size("Exit")[0] and y > 8 * BLOCK_SIZE:
 			self.quitGame()
+		else:
+			chessman_x = int(math.floor(x / BLOCK_SIZE))
+			chessman_y = int(math.floor(y / BLOCK_SIZE))
 
-		chessman_x = int(math.floor(x / BLOCK_SIZE))
-		chessman_y = int(math.floor(y / BLOCK_SIZE))
+			print("player " + str(self.game.player) + " x: " + str(chessman_x) + " y: " + str(chessman_y))
 
-		try:
-			self.game.playerMove(chessman_x, chessman_y)
-		except othello.IllegalMove as e:
-			print("Illegal Move")
-		except Exception as e:
-			raise
+			try:
+				self.game.playerMove(chessman_x, chessman_y)
+			except othello.IllegalMove as e:
+				print("Illegal Move")
+			except Exception as e:
+				raise
 
 	def mousemoveHandler(self, event):
 		pass

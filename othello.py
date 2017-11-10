@@ -1,3 +1,5 @@
+import ai
+
 class IllegalMove(Exception):
 	pass
 
@@ -9,9 +11,10 @@ class Othello(object):
 	def __init__(self):
 		super().__init__()
 
-		self.turn = 1
 		self.player = 1
 		self.victory = 0  # 0 - ongoing | 1 - white win | 2 - black win | -1 - draw
+		self.whiteTiles = 2
+		self.blackTiles = 2
 
 		self.board = [[0 for x in range(8)] for x in range(8)]
 		self.board[3][3] = 1
@@ -20,10 +23,10 @@ class Othello(object):
 		self.board[4][4] = 1
 
 		# setup AI
-		self.useAI = True
+		self.useAI = False
 		self.ai = ai.GameAI(self)
 		
-		self.hasChanged = True
+		self.changed = True
 		self.AIReadyToMove = False
 
 	def playerMove(self, x, y):
@@ -38,33 +41,36 @@ class Othello(object):
 			self.AIReadyToMove = True
 
 	def performMove(self, x, y):
+		print("Check whether move (" + str(x) + ", " + str(y) + ") is legal or not ...")
 		# check whether the block has been occupied
 		if self.board[x][y] != 0:
 			raise IllegalMove("Block has already been occupied!")
 		else:
 			# place the piece and flip necessary pieces
-			self.placePiece(x, y)
+			numFlipped = self.placePiece(x, y)
+			print("Flipped " + str(numFlipped) + " pieces!")
 
 			# check game ending
 			allTiles = [item for sublist in self.board for item in sublist]
-	        emptyTiles = sum(1 for tile in allTiles if tile == 0)
-	        whiteTiles = sum(1 for tile in allTiles if tile == 1)
-	        blackTiles = sum(1 for tile in allTiles if tile == 2)
-	        
-	        # no moves left to make
-	        if whiteTiles < 1 or blackTiles < 1 or emptyTiles < 1:
-	            self.endGame(whiteTiles, blackTiles)
-	            return
-	        
-	        # check available moves
-	        movesFound = self.moveCanBeMade()
-	        if not movesFound:
-	            self.endGame(whiteTiles, blackTiles)
-	            return
-	        
-	        # alternate between player 1 and 2
-	        self.player = 3 - self.player
-	        self.hasChanged = True
+			emptyTiles = sum(1 for tile in allTiles if tile == 0)
+			whiteTiles = sum(1 for tile in allTiles if tile == 1)
+			blackTiles = sum(1 for tile in allTiles if tile == 2)
+			print("empty: " + str(emptyTiles) + " white: " + str(whiteTiles) + " black: " + str(blackTiles))
+			
+			# no moves left to make
+			if whiteTiles < 1 or blackTiles < 1 or emptyTiles < 1:
+				self.endGame(whiteTiles, blackTiles)
+				return
+			
+			# check available moves
+			movesFound = self.moveCanBeMade()
+			if not movesFound:
+				self.endGame(whiteTiles, blackTiles)
+				return
+			
+			# alternate between player 1 and 2
+			self.player = 3 - self.player
+			self.changed = True
 
 	def moveCanBeMade(self):
 		movesFound = False
@@ -89,7 +95,9 @@ class Othello(object):
 			self.victory = 2
 		else:
 			self.victory = -1
-		self.hasChanged = True
+		self.changed = True
+		self.whiteTiles = whiteTiles
+		self.blackTiles = blackTiles
 
 	""" return: the number of flips given that (row, col) will be occupied by player.
 		param: PLAYMODE: 
@@ -117,7 +125,7 @@ class Othello(object):
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append(i)
@@ -141,7 +149,7 @@ class Othello(object):
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append(i)
@@ -165,7 +173,7 @@ class Othello(object):
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append(i)
@@ -189,7 +197,7 @@ class Othello(object):
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append(i)
@@ -203,23 +211,23 @@ class Othello(object):
 
 		# check along diagonal directions
 		# upper-left direction
-		i = 0
+		i = 1
 		ulDiagonal = []
 		while row - i >= 0 and col - i >= 0:
-			ulDiagonal.append(board[row-i][col-i])
-			i -= 1
+			ulDiagonal.append(self.board[row-i][col-i])
+			i += 1
 		if self.player in ulDiagonal:
 			changes = []
 			searchCompleted = False
 
-			for i in len(ulDiagonal):
+			for i in range(0, len(ulDiagonal)):
 				piece = ulDiagonal[i]
 				if searchCompleted:
 					continue
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append((row-i, col-i))
@@ -232,22 +240,23 @@ class Othello(object):
 						self.board[i][j] = self.player
 
 		# upper-right direction
-		i = 0
+		i = 1
 		urDiagonal = []
 		while row + i < 8 and col - i >= 0:
-			urDiagonal.append(board[row+i][col-i])
+			urDiagonal.append(self.board[row+i][col-i])
+			i += 1
 		if self.player in urDiagonal:
 			changes = []
 			searchCompleted = False
 
-			for i in len(urDiagonal):
+			for i in range(0, len(urDiagonal)):
 				piece = urDiagonal[i]
 				if searchCompleted:
 					continue
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append((row-i, col+i))
@@ -260,22 +269,23 @@ class Othello(object):
 						self.board[i][j] = self.player
 
 		# lower-left direction
-		i = 0
+		i = 1
 		llDiagonal = []
 		while row - i >= 0 and col + i < 8:
-			llDiagonal.append(board[row-i][col+i])
+			llDiagonal.append(self.board[row-i][col+i])
+			i += 1
 		if self.player in llDiagonal:
 			changes = []
 			searchCompleted = False
 
-			for i in len(llDiagonal):
+			for i in range(1, len(llDiagonal)+1):
 				piece = llDiagonal[i]
 				if searchCompleted:
 					continue
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append((row-i, col+i))
@@ -288,22 +298,23 @@ class Othello(object):
 						self.board[i][j] = self.player
 
 		# lower-right direction
-		i = 0
+		i = 1
 		lrDiagonal = []
 		while row + i < 8 and col + i < 8:
-			lrDiagonal.append(board[row+i][col+i])
+			lrDiagonal.append(self.board[row+i][col+i])
+			i += 1
 		if self.player in lrDiagonal:
 			changes = []
 			searchCompleted = False
 
-			for i in len(lrDiagonal):
+			for i in range(0, len(lrDiagonal)):
 				piece = lrDiagonal[i]
 				if searchCompleted:
 					continue
 				if piece == 0:
 					changes = []
 					searchCompleted = True
-				elif counter == self.player:
+				elif piece == self.player:
 					searchCompleted = True
 				else: 
 					changes.append((row+i, col+i))
