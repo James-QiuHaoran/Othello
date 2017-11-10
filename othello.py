@@ -230,7 +230,7 @@ class Othello(object):
 				elif piece == self.player:
 					searchCompleted = True
 				else: 
-					changes.append((row-i, col-i))
+					changes.append((row-(i+1), col-(i+1)))
 
 			# perform flippings
 			if searchCompleted:
@@ -259,7 +259,7 @@ class Othello(object):
 				elif piece == self.player:
 					searchCompleted = True
 				else: 
-					changes.append((row-i, col+i))
+					changes.append((row-(i+1), col+(i+1)))
 
 			# perform flippings
 			if searchCompleted:
@@ -278,7 +278,7 @@ class Othello(object):
 			changes = []
 			searchCompleted = False
 
-			for i in range(1, len(llDiagonal)+1):
+			for i in range(0, len(llDiagonal)):
 				piece = llDiagonal[i]
 				if searchCompleted:
 					continue
@@ -288,7 +288,7 @@ class Othello(object):
 				elif piece == self.player:
 					searchCompleted = True
 				else: 
-					changes.append((row-i, col+i))
+					changes.append((row-(i+1), col+(i+1)))
 
 			# perform flippings
 			if searchCompleted:
@@ -317,7 +317,7 @@ class Othello(object):
 				elif piece == self.player:
 					searchCompleted = True
 				else: 
-					changes.append((row+i, col+i))
+					changes.append((row+(i+1), col+(i+1)))
 
 			# perform flippings
 			if searchCompleted:
