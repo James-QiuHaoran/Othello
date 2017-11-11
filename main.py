@@ -96,9 +96,9 @@ class Game_Engine(object):
 				chessman_size = BLOCK_SIZE - 2 * PADDING_SIZE
 				chessman = pygame.Rect(row * BLOCK_SIZE + PADDING_SIZE, col * BLOCK_SIZE + PADDING_SIZE, chessman_size, chessman_size)
 				if block == 1:
-					self.screen.blit(self.images['white'], chessman)
-				elif block == 2:
 					self.screen.blit(self.images['black'], chessman)
+				elif block == 2:
+					self.screen.blit(self.images['white'], chessman)
 				elif block == 0:
 					pass
 				else:
@@ -108,9 +108,9 @@ class Game_Engine(object):
 		if self.game.victory == -1:
 			self.drawText("Draw! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
 		elif self.game.victory == 1:
-			self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
-		elif self.game.victory == 2:
 			self.drawText("Black Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 55, 10, (255, 128, 0))
+		elif self.game.victory == 2:
+			self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
 
 		# update display
 		pygame.display.update()

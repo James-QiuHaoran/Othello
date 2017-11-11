@@ -5,14 +5,14 @@ class IllegalMove(Exception):
 
 class Othello(object):
 	# 0 - Empty
-	# 1 - White (Player 1)
-	# 2 - Black (Player 2)
+	# 1 - Black (Player 1)
+	# 2 - White (Player 2)
 
 	def __init__(self):
 		super().__init__()
 
 		self.player = 1
-		self.victory = 0  # 0 - ongoing | 1 - white win | 2 - black win | -1 - draw
+		self.victory = 0  # 0 - ongoing | 1 - black win | 2 - white win | (-1) - draw
 		self.whiteTiles = 2
 		self.blackTiles = 2
 
@@ -55,8 +55,8 @@ class Othello(object):
 			# check game ending
 			allTiles = [item for sublist in self.board for item in sublist]
 			emptyTiles = sum(1 for tile in allTiles if tile == 0)
-			whiteTiles = sum(1 for tile in allTiles if tile == 1)
-			blackTiles = sum(1 for tile in allTiles if tile == 2)
+			whiteTiles = sum(1 for tile in allTiles if tile == 2)
+			blackTiles = sum(1 for tile in allTiles if tile == 1)
 			print("empty: " + str(emptyTiles) + " white: " + str(whiteTiles) + " black: " + str(blackTiles))
 			
 			# no moves left to make
@@ -98,9 +98,9 @@ class Othello(object):
 
 	def endGame(self, whiteTiles, blackTiles):
 		if whiteTiles > blackTiles:
-			self.victory = 1
-		elif whiteTiles < blackTiles:
 			self.victory = 2
+		elif whiteTiles < blackTiles:
+			self.victory = 1
 		else:
 			self.victory = -1
 		self.changed = True

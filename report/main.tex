@@ -88,33 +88,81 @@ The initial state, actions, and result(transition model) define the game tree fo
 
 
 \section{Artificial Intelligence Methodology}
-\subsection{Search Engine}
+\subsection{Search Method}
+
+A* is used in this application.
+
 \subsection{$\alpha$-$\beta$ Pruning}
+
+Minimax algorithm is used in this application with $\alpha$-$\beta$ Pruning.
+
 \subsection{Heuristics Applied}
+
+Heuristics is applied to guide the Agent and give an optimal move.
+
 \subsection{Evaluation Function}
 
+Based on the rules and strategies, assign scores for the leaves of the tree, the evaluation function is $Score(move(row, col)) = P(move(row, col)) + C(move(row, col)) + L(move(row, col)) + M(move(row, col))$. The following examples is made for the agent (i.e. white).
+
+\begin{itemize}
+\item \textbf{Piece Difference} $P(move(row, col))$: measure how many pieces of each color on the board. Let $B$ and $W$ represent the human player and the agent. If $W > B$, then score is $W/(B+W) * 100$; if $W < B$, then score is $-B/(B+W) * 100$; If $W = B$, then score is 0.
+\item \textbf{Corner Captions} $C(move(row, col))$: measures how many corners are owned by each player. Let $B$ and $W$ be the number of black and white tiles in the corners, then the score is $25*(W - B)$.
+\item \textbf{Corner Closeness} $L(move(row, col))$: measures the pieces adjacent to empty corners. Let $B$ and $W$ be the number of black and white tiles that are adjacent to empty corners, respectively, then the score is $12.5*(W - B)$.
+\item \textbf{Mobility} $M(move(row, col))$: measures how many legal moves each player has. Let $B$ and $W$ be the number of all possible legal moves black and white players could make. If $W > B$, then score is $W/(B+W) * 100$; if $W < B$, then score is $-B/(B+W) * 100$; If $W = B$, then score is 0.
+\end{itemize}
 
 \section{Program Architecture}
 
 The program application uses PyGame as its game engine. The whole flow is then divided into three layers. The first layer is the game engine, which the second layer, i.e. the game logic, is based on. The third layer is the implementation of Artificial Intelligence algorithms, which can be accessed by the second layer.
 
 \subsection{View Layer - Why PyGame?}
-The pygame library is an open-source module for the Python programming language specifically intended to help programmers make games and other multimedia applications. Built on top of the highly portable SDL (Simple DirectMedia Layer) development library, pygame can run across many platforms and operating systems.\\\\
+The pygame library is an open-source module for the Python programming language specifically intended to help programmers make games and other multimedia applications. Built on top of the highly portable SDL (Simple DirectMedia Layer) development library, pygame can run across many platforms and operating systems.\\
+\begin{figure}[!htb]
+\centering
+\includegraphics[scale=.3]{GUI.eps}
+\caption{Graphical Interface of Othello}
+\label{fig:digraph}
+\end{figure}\\
 \noindent
 By using the pygame module, programmers can control the logic and graphics of their games without worrying about the backend complexities required for working with video and audio.
+\noindent
+The GUI is an 8 by 8 board with black and white pieces. Two buttons are set at the bottom of the window. Player could restart or exit the game by pressing the corresponding button. Each move can be controlled by the mouse.
 
 \subsection{Model \& Control Layer - Game Flow}
 Module othello with class Othello implements the game flow. Attribute "useAI" determines whether AI could be used or not. If the attribute is set to false, then this is a two-player Othello, otherwise, this is a computer-player Othello.\\\\
 \noindent
-Attribute "player" determines who is holding the turn, 1 (white) represents the player 1, and 2 (two) represents player 2 or the AI. Before the player click a block, the model will first check whether there's available movement. If there is, then the player could move. If it's a valid move, then flipping of the pieces will be performed, otherwise, the player could see there's no change in the board, i.e. he or she should give a valid move and then the other player (AI) could move.\\\\
+Attribute "player" determines who is holding the turn, 1 (black) represents the player 1, and 2 (white) represents player 2 or the AI. Before the player click a block, the model will first check whether there's available movement. If there is, then the player could move. If it's a valid move, then flipping of the pieces will be performed, otherwise, the player could see there's no change in the board, i.e. he or she should give a valid move and then the other player (AI) could move.\\\\
 \noindent
 If two players cannot move, game over.
 
 \section{Instructions on How to Run the Application}
 
+In Windows,
+
+\begin{itemize}
+\item Install python 3 (3.6.1 or above)
+\item Install pygame \texttt{py -m pip install pygame}
+\item Go to the root directory and run \texttt{py main.py}
+\end{itemize}
+
+\noindent
+In Linux,
+
+\begin{itemize}
+\item Check python version: \texttt{python3 --version}
+\item If not installed: \texttt{sudo apt-get install python3.6}
+\item Install pygame: \texttt{sudo apt-get install python3-pygame}
+\item Go to the root directory and run \texttt{python3 main.py}
+\end{itemize}
+
+\noindent
+If there's any problem on running the application, please feel free to contact with James.Qiu by email: jamesqiu@hku.hk.
+
 
 \begin{thebibliography}{}
 \bibitem{}
 Reversi, Wikipedia, September 2017, https://en.wikipedia.org/wiki/Reversi
+\bibitem{}
+Getting Started with PyGame. Retrieved from https://www.pygame.org/wiki /GettingStarted\#Pygame Installation
 \end{thebibliography}
 \end{document}
