@@ -51,6 +51,7 @@ class Othello(object):
 			# place the piece and flip necessary pieces
 			numFlipped = self.placePiece(x, y, self.player, PLAYMODE=True)
 			print("Flipped " + str(numFlipped) + " pieces!")
+			self.changed = True
 
 			# check game ending
 			allTiles = [item for sublist in self.board for item in sublist]
