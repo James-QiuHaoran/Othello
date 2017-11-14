@@ -88,28 +88,39 @@ The initial state, actions, and result(transition model) define the game tree fo
 
 
 \section{Artificial Intelligence Methodology}
-\subsection{Search Method}
 
-A* is used in this application.
+\subsection{Minimax Search Algorithm with $\alpha$-$\beta$ Pruning}
 
-\subsection{$\alpha$-$\beta$ Pruning}
+The search method allows the agent to look ahead and explore different moves through a systematic generation of next possible moves. The heuristic function (elaborated in the next subsection) complements the search process by evaluating the state of the game along the various paths. The efficiency of the search technique determines the extent to which the game tree is explored. The greater the efficiency of the search technique, the greater the number of nodes that can be searched, hence the farther the agent could look ahead. An ideal search mechanism should be efficient and prune irrelevant paths without loss of any important information.\\\\
+\noindent
+Iterative-Deepening Minimax Search algorithm is used in this application with $\alpha$-$\beta$ Pruning. It becomes unclear as to the optimal depth to search up to, if the depth is to be defined
+statically. Hence, we implemented alpha-beta with iterative deepening. The algorithm sets depth to a reasonable initial value of three. Then the depth is increased and the search is conducted
+again. This is done till the timing constraints are not violated. Before searching with an increased depth, a naive check is made to ensure that the search about to be spawned will not violate timing constraints. Using the time taken for the previous depth, we approximately calculate a new depth at which the next iteration can take place. This new depth would be such that it finishes, according to the approximation, before the allotted time. If it doesn’t, the process is not preempted, and the execution exceeds by a few milliseconds. 
 
-Minimax algorithm is used in this application with $\alpha$-$\beta$ Pruning.
+\subsection{Evaluation Function - Heuristics Applied}
 
-\subsection{Heuristics Applied}
+Due to the limitation of resources, a computer cannot store and evaluate all possible states. Aligning to the utility function, evaluation function is used for giving agent heuristics about a middle state. Based on the rules and strategies, assign scores for the leaves of the tree, the evaluation function is:
 
-Heuristics is applied to guide the Agent and give an optimal move.
-
-\subsection{Evaluation Function}
-
-Based on the rules and strategies, assign scores for the leaves of the tree, the evaluation function is $Score(move(row, col)) = P(move(row, col)) + C(move(row, col)) + L(move(row, col)) + M(move(row, col))$. The following examples is made for the agent (i.e. white).
+\begin{center}
+$Score(move(row, col)) = P(move(row, col)) + C(move(row, col)) + L(move(row, col)) + M(move(row, col)) + S(move(row, col))$
+\end{center}
+\noindent
+The following examples is made for the agent (i.e. white).
 
 \begin{itemize}
 \item \textbf{Piece Difference} $P(move(row, col))$: measure how many pieces of each color on the board. Let $B$ and $W$ represent the human player and the agent. If $W > B$, then score is $W/(B+W) * 100$; if $W < B$, then score is $-B/(B+W) * 100$; If $W = B$, then score is 0.
 \item \textbf{Corner Captions} $C(move(row, col))$: measures how many corners are owned by each player. Let $B$ and $W$ be the number of black and white tiles in the corners, then the score is $25*(W - B)$.
 \item \textbf{Corner Closeness} $L(move(row, col))$: measures the pieces adjacent to empty corners. Let $B$ and $W$ be the number of black and white tiles that are adjacent to empty corners, respectively, then the score is $12.5*(W - B)$.
 \item \textbf{Mobility} $M(move(row, col))$: measures how many legal moves each player has. Let $B$ and $W$ be the number of all possible legal moves black and white players could make. If $W > B$, then score is $W/(B+W) * 100$; if $W < B$, then score is $-B/(B+W) * 100$; If $W = B$, then score is 0.
+\item \textbf{Stability} $M(move(row, col))$: Stability of coins is a key factor in Othello. The stability measure of a coin is a quantitative representation of how vulnerable it is to being flanked. The more stable pieces a state contains, the higher the score will be. Assign 1 for a stable piece, 0 for a semi-stable piece, -1 for an unstable piece.
 \end{itemize}
+
+\subsection{Others}
+
+After running a few experiments with a time limit set to three seconds. The experiments were run with the optimal weights. The average depth searched was 5.6, and the maximum time taken for any search
+was 2.75 seconds. The time taken for an average move was 2.69 seconds.\\\\
+\noindent
+We have a database of predetermined moves, which we refer to when possible. This avoids any time wasted in  searching when the next move to make is an obvious one. For example, if a corner could be captured, then that should be the next move executed, hence searching would be redundant in such cases.
 
 \section{Program Architecture}
 
@@ -121,7 +132,7 @@ The pygame library is an open-source module for the Python programming language 
 \centering
 \includegraphics[scale=.3]{GUI.eps}
 \caption{Graphical Interface of Othello}
-\label{fig:digraph}
+%\label{fig2:digraph}
 \end{figure}\\
 \noindent
 By using the pygame module, programmers can control the logic and graphics of their games without worrying about the backend complexities required for working with video and audio.
@@ -129,7 +140,7 @@ By using the pygame module, programmers can control the logic and graphics of th
 The GUI is an 8 by 8 board with black and white pieces. Two buttons are set at the bottom of the window. Player could restart or exit the game by pressing the corresponding button. Each move can be controlled by the mouse.
 
 \subsection{Model \& Control Layer - Game Flow}
-Module othello with class Othello implements the game flow. Attribute "useAI" determines whether AI could be used or not. If the attribute is set to false, then this is a two-player Othello, otherwise, this is a computer-player Othello.\\\\
+Module "othello" with class "Othello" implements the game flow. Attribute "useAI" determines whether AI could be used or not. If the attribute is set to false, then this is a two-player Othello, otherwise, this is a computer-player Othello.\\\\
 \noindent
 Attribute "player" determines who is holding the turn, 1 (black) represents the player 1, and 2 (white) represents player 2 or the AI. Before the player click a block, the model will first check whether there's available movement. If there is, then the player could move. If it's a valid move, then flipping of the pieces will be performed, otherwise, the player could see there's no change in the board, i.e. he or she should give a valid move and then the other player (AI) could move.\\\\
 \noindent
@@ -161,8 +172,10 @@ If there's any problem on running the application, please feel free to contact w
 
 \begin{thebibliography}{}
 \bibitem{}
-Reversi, Wikipedia, September 2017, https://en.wikipedia.org/wiki/Reversi
+Reversi, Wikipedia, September 2017, $https://en.wikipedia.org/wiki/Reversi$
 \bibitem{}
-Getting Started with PyGame. Retrieved from https://www.pygame.org/wiki /GettingStarted\#Pygame Installation
+Getting Started with PyGame. Retrieved from \\$https://www.pygame.org/wiki/GettingStarted\#Pygame Installation$
+\bibitem{}
+An Analysis of Heuristics in Othello, University of Washington. Retrieved from \\$https://courses.cs.washington.edu/courses/cse573/04au/Project/mini1/RUSSIA/Final_Paper.pdf$
 \end{thebibliography}
 \end{document}
