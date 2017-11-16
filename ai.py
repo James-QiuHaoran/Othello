@@ -26,7 +26,9 @@ class GameAI(object):
 		whiteTiles = sum(1 for tile in allTiles if tile == 2)
 		blackTiles = sum(1 for tile in allTiles if tile == 1)
 
-		if player == 1:
+		if whiteTiles + blackTiles == 0:
+			return 0
+		elif player == 1:
 			if blackTiles > whiteTiles:
 				return (blackTiles / (blackTiles + whiteTiles)) * 100
 			else:
@@ -59,7 +61,7 @@ class GameAI(object):
 
 		if player == 1:
 			return 25 * (numCorners[0] - numCorners[1])
-		else
+		else:
 			return 25 * (numCorners[1] - numCorners[0])
 
 	# how many corner-closeness piece are owned by the player
@@ -100,13 +102,53 @@ class GameAI(object):
 
 		if player == 1:
 			return 12.5 * (numCorners[0] - numCorners[1])
-		else
+		else:
 			return 12.5 * (numCorners[1] - numCorners[0])
 
-	# how many steps can a player move
+	# relative mobility of a player to another (how many steps can a player move)
 	def mobility(self, player, board):
-		pass
+		meMobility = self.game.moveCanBeMade(player)
+		opponentMobility = self.game.moveCanBeMade(3 - player)
+
+		if meMobility + opponentMobility == 0:
+			return 0
+		elif meMobility > opponentMobility:
+			return 100 * meMobility / (meMobility + opponentMobility)
+		else:
+			return -100 * opponentMobility / (meMobility + opponentMobility)
 
 	# for a piece: stable - 1; semi-stable: 0; unstable - -1
 	def stability(self, player, board):
-		pass
+		stability = [0, 0]
+		meStability, opponentStability = stability[0], stability[1]
+
+		for row in range(1, 7):
+			for col in range(1, 7):
+				if (board[row-1][col-1] != 0):
+					stability[player-1] += 1
+				if (board[row-1][col] != 0):
+					stability[player-1] += 1
+				if (board[row-1][col+1] != 0):
+					stability[player-1] += 1
+				if (board[row+1][col-1] != 0):
+					stability[player-1] += 1
+				if (board[row+1][col] != 0):
+					stability[player-1] += 1
+				if (board[row+1][col+1] != 0):
+					stability[player-1] += 1
+				if (board[row][col-1] != 0):
+					stability[player-1] += 1
+				if (board[row][col+1] != 0):
+					stability[player-1] += 1
+
+		if player == 1:
+			meStability, opponentStability = stability[0], stability[1]
+		else
+			meStability, opponentStability = stability[1], stability[0]
+
+		if meStability + opponentStability == 0:
+			return 0
+		elif meStability > opponentStability:
+			return 100 * meStability / (meStability + opponentStability)
+		else:
+			return -100 * opponentStability / (meStability + opponentStability)
