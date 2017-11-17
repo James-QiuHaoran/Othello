@@ -7,14 +7,44 @@ class GameAI(object):
 		self.move = (-1,-1)
 		self.timelimit = 3  # 3 seconds is the time limit for search
 
+	# AI perform move (there must be an available move due to the pre-move check)
 	def move(self):
 		# Iterative Deepening MiniMax Search with Alpha-Beta Pruning
+		self.move = miniMax(board)
 
 		# perform move (there must be an available move)
 		self.game.performMove(self.move[0], self.move[1])
 
+	""" Iterative Deepening MiniMax Search Algorithm within Time Limit
+		From depth = 3, if still within the time limit, continue search to get more insight.
+		Return the optimal move within limited resources. 
+	"""
+	def miniMax(self, board):
+		startTime = time.time()
+		timeElapsed = 0
+		depth = 3
+		optimalMove = (-1, -1)
+		while timeDifference < 3:
+			optimalMove = IDMiniMax(board, 0, depth, 2);
+			endTime = time.time()
+			timeElapsed += endTime - startTime
+			startTime = endTime
+			depth += 1
+
+		return optimalMove
+
+	""" Iterative Deepening MiniMax Search with Alpha-Beta Pruning
+		board - state at current node
+		player - player at current node
+		currentLevel - level at current node
+		maxLevel - used to judge whether go deeper or not
+		Return the optimal move find in the current level for the current node.
+	"""
+	def IDMiniMax(self, board, currentLevel, maxLevel, player):
+		pass
+
 	# evaluation function for player 1 (black) or 2 (white) in this state (board)
-	def evaluation(self, player, board):
+	def utility(self, player, board):
 		if player != 1 and player != 2:
 			print("Error - Unknown Player!")
 			raise IllegalMove("Error - Unknown Player!")
