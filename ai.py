@@ -1,4 +1,4 @@
-import time
+import time, math
 
 class GameAI(object):
 	def __init__(self, game):
@@ -24,12 +24,18 @@ class GameAI(object):
 		timeElapsed = 0
 		depth = 3
 		optimalMove = (-1, -1)
+		optimalBoard = board
 		while timeDifference < 3:
-			optimalMove = IDMiniMax(board, 0, depth, 2);
+			optimalBoard = IDMiniMax(board, 0, depth, 2, -math.inf, math.inf);
 			endTime = time.time()
 			timeElapsed += endTime - startTime
 			startTime = endTime
 			depth += 1
+
+		for row in range(0, 8):
+			for col in range(0, 8):
+				if board[row][col] != optimalBoard[row][col]:
+					optimalMove = (row, col)
 
 		return optimalMove
 
@@ -38,10 +44,53 @@ class GameAI(object):
 		player - player at current node
 		currentLevel - level at current node
 		maxLevel - used to judge whether go deeper or not
-		Return the optimal move find in the current level for the current node.
+		Return the optimal board (state) found in the current level for the current node.
 	"""
-	def IDMiniMax(self, board, currentLevel, maxLevel, player):
-		pass
+	def IDMiniMax(self, board, currentLevel, maxLevel, player, alpha, beta):
+		if (currentLevel == maxLevel):
+			return board
+
+		successorBoards = findSuccessorBoards(board)
+		scores = []
+		for idx in range(0, len(successorBoards)):
+			scores.append(utility(successorBoards[idx]))
+
+		bestBoard = None
+		if player == 1:
+			maxValue = -math.inf
+			for idx in range(0, len(successorBoards)):
+				lookaheadBoard = IDMiniMax(successorBoards[idx], currentLevel+1, maxLevel, 2, alpha, beta)
+				utility = utility(lookaheadBoard)
+				if utility > maxValue:
+					maxValue = utility
+					bestBoard = successorBoards[idx]
+				alpha = math.max(alpha, utility)
+				if utility >= beta:
+					return lookaheadBoard  # prune
+		else:
+			minValue = math.inf
+			for idx in range(0, len(successorBoards)):
+				lookaheadBoard = IDMiniMax(successorBoards[idx], currentLevel+1, maxLevel, 1, alpha, beta)
+				utility = utility(lookaheadBoard)
+				if utility < minValue:
+					minValue = utility
+					bestBoard = successorBoards[idx]
+				beta = math.min(beta, utility)
+				if utility <= alpha:
+					return lookaheadBoard  # prune
+
+	# return a list of successor boards
+	def findSuccessorBoards(self, board, player):
+		successorBoards = []
+		for row in range(0, 8):
+			for col in range(0, 8):
+				if self.board[row][col] == 0:
+					numAvailableMoves = self.game.placePiece(row, col, player, PLAYMODE=False)
+					if numAvailableMoves > 0:
+						board[row][col] = player
+						successorBoards.append(board)
+						board[row][col] = 0
+		return successorBoards
 
 	# evaluation function for player 1 (black) or 2 (white) in this state (board)
 	def utility(self, player, board):
