@@ -49,7 +49,7 @@ class Othello(object):
 			raise IllegalMove("Block has already been occupied!")
 		else:
 			# place the piece and flip necessary pieces
-			numFlipped = self.placePiece(x, y, self.player, PLAYMODE=True)
+			numFlipped = self.placePiece(self.board, x, y, self.player, PLAYMODE=True)
 			print("Flipped " + str(numFlipped) + " pieces!")
 			self.changed = True
 
@@ -66,10 +66,10 @@ class Othello(object):
 				return
 			
 			# check available moves of its opponent
-			movesFound = self.moveCanBeMade(3 - self.player)
+			movesFound = self.moveCanBeMade(self.board, 3 - self.player)
 			if not movesFound:
 				# opponent cannot move, do not alternate
-				movesFound = self.moveCanBeMade(self.player)
+				movesFound = self.moveCanBeMade(self.board, self.player)
 				if not movesFound:
 					# this player cannot move either, end game
 					self.endGame(whiteTiles, blackTiles)
@@ -79,16 +79,18 @@ class Othello(object):
 			else:
 				# alternate between player 1 and 2
 				self.player = 3 - self.player
+				if self.player == 2 and self.useAI == True:
+					self.AIReadyToMove = True
 				self.changed = True
 
-	def moveCanBeMade(self, playerID):
+	def moveCanBeMade(self, board, playerID):
 		movesFound = False
 		for row in range(0, 8):
 			for col in range(0, 8):
 				if movesFound:
 					continue
-				elif self.board[row][col] == 0:
-					numAvailableMoves = self.placePiece(row, col, playerID, PLAYMODE=False)
+				elif board[row][col] == 0:
+					numAvailableMoves = self.placePiece(board, row, col, playerID, PLAYMODE=False)
 					if numAvailableMoves > 0:
 						movesFound = True
 		return movesFound
@@ -113,14 +115,14 @@ class Othello(object):
 		- True for board flipping after a piece is put by the player
 		- False for available number of moves checking
 	"""
-	def placePiece(self, row, col, playerID, PLAYMODE=True):
+	def placePiece(self, board, row, col, playerID, PLAYMODE=True):
 		if PLAYMODE:
-			self.board[row][col] = self.player
+			board[row][col] = self.player
 		count = 0  # record number of flips
 
 		# record current row and column
-		__column = self.board[row]
-		__row = [self.board[i][col] for i in range(0,8)]
+		__column = board[row]
+		__row = [board[i][col] for i in range(0,8)]
 
 		# check up direction
 		if playerID in __column[:col]:
@@ -144,7 +146,7 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i in changes:
-						self.board[row][i] = self.player
+						board[row][i] = self.player
 
 		# check down direction
 		if playerID in __column[col:]:
@@ -168,7 +170,7 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i in changes:
-						self.board[row][i] = self.player
+						board[row][i] = self.player
 
 		# check left direction
 		if playerID in __row[:row]:
@@ -192,7 +194,7 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i in changes:
-						self.board[i][col] = self.player
+						board[i][col] = self.player
 
 		# check right direction
 		if playerID in __row[row:]:
@@ -216,14 +218,14 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i in changes:
-						self.board[i][col] = self.player
+						board[i][col] = self.player
 
 		# check along diagonal directions
 		# upper-left direction
 		i = 1
 		ulDiagonal = []
 		while row - i >= 0 and col - i >= 0:
-			ulDiagonal.append(self.board[row-i][col-i])
+			ulDiagonal.append(board[row-i][col-i])
 			i += 1
 		if playerID in ulDiagonal:
 			changes = []
@@ -246,13 +248,13 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i,j in changes:
-						self.board[i][j] = self.player
+						board[i][j] = self.player
 
 		# upper-right direction
 		i = 1
 		urDiagonal = []
 		while row + i < 8 and col - i >= 0:
-			urDiagonal.append(self.board[row+i][col-i])
+			urDiagonal.append(board[row+i][col-i])
 			i += 1
 		if playerID in urDiagonal:
 			changes = []
@@ -275,13 +277,13 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i,j in changes:
-						self.board[i][j] = self.player
+						board[i][j] = self.player
 
 		# lower-left direction
 		i = 1
 		llDiagonal = []
 		while row - i >= 0 and col + i < 8:
-			llDiagonal.append(self.board[row-i][col+i])
+			llDiagonal.append(board[row-i][col+i])
 			i += 1
 		if playerID in llDiagonal:
 			changes = []
@@ -304,13 +306,13 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i,j in changes:
-						self.board[i][j] = self.player
+						board[i][j] = self.player
 
 		# lower-right direction
 		i = 1
 		lrDiagonal = []
 		while row + i < 8 and col + i < 8:
-			lrDiagonal.append(self.board[row+i][col+i])
+			lrDiagonal.append(board[row+i][col+i])
 			i += 1
 		if playerID in lrDiagonal:
 			changes = []
@@ -333,10 +335,10 @@ class Othello(object):
 				count += len(changes)
 				if PLAYMODE:
 					for i,j in changes:
-						self.board[i][j] = self.player
+						board[i][j] = self.player
 
 		if count == 0 and PLAYMODE:
-			self.board[row][col] = 0
+			board[row][col] = 0
 			raise IllegalMove("Placing piece at (" + str(row) + ", " + str(col) + ") does not have any flips!")
 
 		return count

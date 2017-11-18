@@ -5,12 +5,13 @@ class GameAI(object):
 		super().__init__()
 		self.game = game
 		self.move = (-1,-1)
-		self.timelimit = 3  # 3 seconds is the time limit for search
+		self.timeLimit = 3  # 3 seconds is the time limit for search
 
 	# AI perform move (there must be an available move due to the pre-move check)
 	def performMove(self):
 		# Iterative Deepening MiniMax Search with Alpha-Beta Pruning
-		self.move = self.miniMax(self.game.board)
+		tmpBoard = [row[:] for row in self.game.board] # we don't want to make changes to the game board
+		self.move = self.miniMax(tmpBoard)
 
 		# perform move (there must be an available move)
 		self.game.performMove(self.move[0], self.move[1])
@@ -25,12 +26,13 @@ class GameAI(object):
 		depth = 3
 		optimalMove = (-1, -1)
 		optimalBoard = board
-		while timeElapsed < 3:
+		while timeElapsed < self.timeLimit:
 			optimalBoard = self.IDMiniMax(board, 0, depth, 2, -math.inf, math.inf);
 			endTime = time.time()
 			timeElapsed += endTime - startTime
 			startTime = endTime
 			depth += 1
+		print("Time used: " + str(timeElapsed))
 
 		for row in range(0, 8):
 			for col in range(0, 8):
@@ -47,19 +49,17 @@ class GameAI(object):
 		Return the optimal board (state) found in the current level for the current node.
 	"""
 	def IDMiniMax(self, board, currentLevel, maxLevel, player, alpha, beta):
-		if (currentLevel == maxLevel):
+		print("Level: " + str(currentLevel) + " maxLevel: " + str(maxLevel))
+		if (not self.game.moveCanBeMade(board, player) or currentLevel == maxLevel):
 			return board
 
 		successorBoards = self.findSuccessorBoards(board, player)
-		scores = []
-		for idx in range(0, len(successorBoards)):
-			scores.append(self.utilityOf(successorBoards[idx]))
-
 		bestBoard = None
-		if player == 1:
+
+		if player == 2:
 			maxValue = -math.inf
 			for idx in range(0, len(successorBoards)):
-				lookaheadBoard = self.IDMiniMax(successorBoards[idx], currentLevel+1, maxLevel, 2, alpha, beta)
+				lookaheadBoard = self.IDMiniMax(successorBoards[idx], currentLevel+1, maxLevel, 1, alpha, beta)
 				utility = self.utilityOf(lookaheadBoard)
 				if utility > maxValue:
 					maxValue = utility
@@ -70,7 +70,7 @@ class GameAI(object):
 		else:
 			minValue = math.inf
 			for idx in range(0, len(successorBoards)):
-				lookaheadBoard = self.IDMiniMax(successorBoards[idx], currentLevel+1, maxLevel, 1, alpha, beta)
+				lookaheadBoard = self.IDMiniMax(successorBoards[idx], currentLevel+1, maxLevel, 2, alpha, beta)
 				utility = self.utilityOf(lookaheadBoard)
 				if utility < minValue:
 					minValue = utility
@@ -79,17 +79,19 @@ class GameAI(object):
 				if utility <= alpha:
 					return lookaheadBoard  # prune
 
+		return bestBoard
+
 	# return a list of successor boards
 	def findSuccessorBoards(self, board, player):
 		successorBoards = []
 		for row in range(0, 8):
 			for col in range(0, 8):
 				if board[row][col] == 0:
-					numAvailableMoves = self.game.placePiece(row, col, player, PLAYMODE=False)
+					numAvailableMoves = self.game.placePiece(board, row, col, player, PLAYMODE=False)
 					if numAvailableMoves > 0:
-						board[row][col] = player
-						successorBoards.append(board)
-						board[row][col] = 0
+						successorBoard = [row[:] for row in board]
+						successorBoard[row][col] = player
+						successorBoards.append(successorBoard)
 		return successorBoards
 
 	# evaluation function (heuristics for non-final node) in this state (board)
@@ -171,8 +173,8 @@ class GameAI(object):
 
 	# relative mobility of a player to another (how many steps can a player move)
 	def mobility(self, board):
-		blackMobility = self.game.moveCanBeMade(1)
-		whiteMobility = self.game.moveCanBeMade(2)
+		blackMobility = self.game.moveCanBeMade(board, 1)
+		whiteMobility = self.game.moveCanBeMade(board, 2)
 
 		if blackMobility + whiteMobility == 0:
 			return 0
@@ -217,4 +219,4 @@ class GameAI(object):
 		if whiteStability + blackStability == 0:
 			return 0
 		else:
-			return 100 * whiteStability / (whiteStability + whiteStability)
+			return 100 * whiteStability / (whiteStability + blackStability)
