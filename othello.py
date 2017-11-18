@@ -23,7 +23,7 @@ class Othello(object):
 		self.board[4][4] = 1
 
 		# set useAI = False to disable AI opponent - two-player mode
-		self.useAI = False
+		self.useAI = True
 
 		# set up AI - player-computer mode
 		self.ai = ai.GameAI(self)
@@ -94,7 +94,7 @@ class Othello(object):
 		return movesFound
 
 	def AIMove(self):
-		self.ai.move()
+		self.ai.performMove()
 		self.AIReadyToMove = False
 
 	def endGame(self, whiteTiles, blackTiles):
