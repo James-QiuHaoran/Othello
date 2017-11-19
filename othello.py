@@ -1,7 +1,8 @@
 import ai
 
 class IllegalMove(Exception):
-	pass
+	def __init__(self, message):
+		self.message = message
 
 class Othello(object):
 	# 0 - Empty
@@ -27,9 +28,10 @@ class Othello(object):
 
 		# set up AI - player-computer mode
 		self.ai = ai.GameAI(self)
-		
 		self.changed = True
 		self.AIReadyToMove = False
+
+		self.debug = True # True for debugging
 
 	def playerMove(self, x, y):
 		# if the game is over or not player's turn
@@ -41,16 +43,21 @@ class Othello(object):
 		# AI's turn and AI is ready to move
 		if self.useAI and self.player == 2:
 			self.AIReadyToMove = True
+			if self.debug:
+				print("AI is ready to move!")
 
 	def performMove(self, x, y):
-		print("Check whether move (" + str(x) + ", " + str(y) + ") is legal or not ...")
+		if self.debug:
+			print("Check whether move (" + str(x) + ", " + str(y) + ") is legal or not ...")
+
 		# check whether the block has been occupied
 		if self.board[x][y] != 0:
 			raise IllegalMove("Block has already been occupied!")
 		else:
 			# place the piece and flip necessary pieces
 			numFlipped = self.placePiece(self.board, x, y, self.player, PLAYMODE=True)
-			print("Flipped " + str(numFlipped) + " pieces!")
+			if self.debug:
+				print("Flipped " + str(numFlipped) + " pieces!")
 			self.changed = True
 
 			# check game ending
@@ -58,7 +65,7 @@ class Othello(object):
 			emptyTiles = sum(1 for tile in allTiles if tile == 0)
 			whiteTiles = sum(1 for tile in allTiles if tile == 2)
 			blackTiles = sum(1 for tile in allTiles if tile == 1)
-			print("empty: " + str(emptyTiles) + " white: " + str(whiteTiles) + " black: " + str(blackTiles))
+			print("[Console MSG] Current state - empty: " + str(emptyTiles) + " white: " + str(whiteTiles) + " black: " + str(blackTiles))
 			
 			# no moves left to make
 			if whiteTiles < 1 or blackTiles < 1 or emptyTiles < 1:
@@ -68,19 +75,24 @@ class Othello(object):
 			# check available moves of its opponent
 			movesFound = self.moveCanBeMade(self.board, 3 - self.player)
 			if not movesFound:
+				if self.debug:
+					print("Player " + str(3 - self.player) + " cannot move!")
 				# opponent cannot move, do not alternate
 				movesFound = self.moveCanBeMade(self.board, self.player)
 				if not movesFound:
 					# this player cannot move either, end game
+					if self.debug:
+						print("Player " + str(self.player) + "cannot move either!")
 					self.endGame(whiteTiles, blackTiles)
 					return
 				else:
-					pass
+					if self.debug:
+						print("Player " + str(self.player) + " can move, then move!")
+					# this player can move, move
+					self.changed = True
 			else:
-				# alternate between player 1 and 2
+				# opponent can move, alternate between player 1 and 2
 				self.player = 3 - self.player
-				if self.player == 2 and self.useAI == True:
-					self.AIReadyToMove = True
 				self.changed = True
 
 	def moveCanBeMade(self, board, playerID):

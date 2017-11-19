@@ -17,6 +17,8 @@ class Game_Engine(object):
 		# create game object
 		self.game = othello.Othello()
 
+		self.debug = True # True for debugging
+
 	def preparation(self):
 		pygame.init()
 		self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -45,22 +47,24 @@ class Game_Engine(object):
 		self.newGame()
 
 		while True:
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					self.quitGame()
-				elif event.type == pygame.KEYDOWN:
-					self.keydownHandler(event)
-				elif event.type == pygame.KEYUP:
-					self.keyupHandler(event)
-				elif event.type == pygame.MOUSEBUTTONDOWN:
-					self.mousedownHandler(event)
-				elif event.type == pygame.MOUSEBUTTONUP:
-					self.mouseupHandler(event)
-				elif event.type == pygame.MOUSEMOTION:
-					self.mousemoveHandler(event)
-				else:
-					pass
-
+			if self.game.AIReadyToMove:
+			     self.game.AIMove()
+			else:
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT:
+						self.quitGame()
+					elif event.type == pygame.KEYDOWN:
+						self.keydownHandler(event)
+					elif event.type == pygame.KEYUP:
+						self.keyupHandler(event)
+					elif event.type == pygame.MOUSEBUTTONDOWN:
+						self.mousedownHandler(event)
+					elif event.type == pygame.MOUSEBUTTONUP:
+						self.mouseupHandler(event)
+					elif event.type == pygame.MOUSEMOTION:
+						self.mousemoveHandler(event)
+					else:
+						pass
 			if self.game.changed:
 				self.drawBoard()
 				self.game.changed = False
@@ -138,12 +142,13 @@ class Game_Engine(object):
 			chessman_x = int(math.floor(x / BLOCK_SIZE))
 			chessman_y = int(math.floor(y / BLOCK_SIZE))
 
-			print("player " + str(self.game.player) + " x: " + str(chessman_x) + " y: " + str(chessman_y))
+			if self.debug:
+				print("player " + str(self.game.player) + " x: " + str(chessman_x) + " y: " + str(chessman_y))
 
 			try:
 				self.game.playerMove(chessman_x, chessman_y)
 			except othello.IllegalMove as e:
-				print("Illegal Move")
+				print("Illegal Move" + e.message)
 			except Exception as e:
 				raise
 
