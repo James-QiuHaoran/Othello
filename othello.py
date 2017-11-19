@@ -88,6 +88,8 @@ class Othello(object):
 				else:
 					if self.debug:
 						print("Player " + str(self.player) + " can move, then move!")
+					if self.useAI:
+						self.ai.performMove()
 					# this player can move, move
 					self.changed = True
 			else:

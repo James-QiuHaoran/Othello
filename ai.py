@@ -162,7 +162,7 @@ class GameAI(object):
 		else:
 			numCorners[1] += 1
 
-		return 50 * (numCorners[1] - numCorners[0])
+		return 25 * (numCorners[1] - numCorners[0])
 
 	# how many corner-closeness pieces are owned by each player
 	def cornerCloseness(self, board):
@@ -189,7 +189,7 @@ class GameAI(object):
 			elif board[row][7] == 2:
 				numCorners[1] += 1		
 
-		return 25 * (numCorners[1] - numCorners[0])
+		return 4 * (numCorners[1] - numCorners[0])
 
 	# relative mobility of a player to another (how many steps can a player move)
 	def mobility(self, board):
