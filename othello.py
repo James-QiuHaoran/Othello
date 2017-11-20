@@ -31,7 +31,7 @@ class Othello(object):
 		self.changed = True
 		self.AIReadyToMove = False
 
-		self.debug = True # True for debugging
+		self.debug = False # True for debugging
 
 	def playerMove(self, x, y):
 		# if the game is over or not player's turn

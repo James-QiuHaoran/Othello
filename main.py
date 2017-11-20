@@ -17,7 +17,7 @@ class Game_Engine(object):
 		# create game object
 		self.game = othello.Othello()
 
-		self.debug = True # True for debugging
+		self.debug = False # True for debugging
 
 	def preparation(self):
 		pygame.init()
