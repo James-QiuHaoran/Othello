@@ -4,6 +4,34 @@
 \usepackage{empheq}
 \usepackage{graphicx}
 \usepackage{epstopdf}
+\usepackage{listings}
+\usepackage{color}
+ 
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+ 
+\lstset{style=mystyle}
 
 \special{papersize=8.5in,11in}
 
@@ -61,7 +89,7 @@ Qiu Haoran \\ \vspace{0.3cm}\textsc{UID: 3035234478}\\
 \end{titlepage} 
 
 \begin{abstract}
-Othello, also named Reversi, is a strategy board game between two players. As an artificial intelligence game application, what a player is facing is an intelligence agent instead of another human. This report describes in detail about the AI methodology, such as the search engine, $\alpha$-$\beta$ pruning, heuristics applied, and the application architecture. Some other detail about the program like how Horizon Effect is avoided, the number of steps the AI looks ahead, and the precoded-database in use. In the end, instructions on how to deploy and run the game are given.
+Othello, also named Reversi, is a strategy board game between two players. As an artificial intelligence game application, what a player is facing is an intelligence agent instead of another human. This report describes in detail about the AI methodology, such as the \textbf{search engine}, \textbf{$\alpha$-$\beta$ pruning}, \textbf{heuristics} applied, and the application \textbf{architecture}. Some other detail about the program like how \textbf{horizon effect} is avoided, the number of steps the AI looks ahead, and the precoded-database in use. In the end, instructions on how to deploy and run the game are given.
 \end{abstract}
 
 \section{Game Modeling}
@@ -96,6 +124,50 @@ The search method allows the agent to look ahead and explore different moves thr
 Iterative-Deepening Minimax Search algorithm is used in this application with $\alpha$-$\beta$ Pruning. It becomes unclear as to the optimal depth to search up to, if the depth is to be defined
 statically. Hence, we implemented alpha-beta with iterative deepening. The algorithm sets depth to a reasonable initial value of three. Then the depth is increased and the search is conducted
 again. This is done till the timing constraints are not violated. Before searching with an increased depth, a naive check is made to ensure that the search about to be spawned will not violate timing constraints. Using the time taken for the previous depth, we approximately calculate a new depth at which the next iteration can take place. This new depth would be such that it finishes, according to the approximation, before the allotted time. If it doesn’t, the process is not preempted, and the execution exceeds by a few milliseconds. 
+
+\subsection{Pseudo Code of the Algorithm}
+\begin{lstlisting}
+def search(board):
+	depth = 2
+	time_elapsed = 0
+	initialize optimal_move to (-1, -1)
+	optimal_board = board
+
+	while time_elapsed < time_limit and still_have_to_dig:
+		IDMinimax(board, 0, depth, 2, -infinity, infinity)
+		update time_elapsed, optimal_board, optimal_move
+		depth += 1
+    
+	return optimal_move
+
+def IDMinimax(board, current_level, max_level, player, alpha, beta):
+	if no_available_move or current_level == max_level:
+    	return with flag "can_stop_dig"
+	find successor boards
+	if player is a maximizer:
+		max_value = -infinity
+		for each successor board:
+		lookahead_board = IDMinimax(this_board, current_level+1, max_level, 3-player, alpha, beta)
+		calculate the score for the board
+		if the score > max_value:
+			max_value = score
+			best_board = this successor board
+		alpha = max(alpha, score)
+		if score > beta:
+			return lookahead_board  # pruning happens here
+	else if player is a minimizer:
+		min_value = infinity
+		for each successor board:
+		lookahead_board = IDMinimax(this_board, current_level+1, max_level, 3-player, alpha, beta)
+		calculate the score for the board
+		if the score < min_value:
+			min_value = score
+			best_board = this successor board
+		beta = min(beta, score)
+		if score < alpha:
+			return lookahead_board  # pruning happens here
+	return best_board
+\end{lstlisting}
 
 \subsection{Evaluation Function - Heuristics Applied}
 
