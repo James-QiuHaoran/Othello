@@ -110,11 +110,17 @@ class Game_Engine(object):
 		
 		# game ending check
 		if self.game.victory == -1:
-			self.drawText("Draw! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
+			self.drawText("Draw! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 50, 10, (255, 128, 0))
 		elif self.game.victory == 1:
-			self.drawText("Black Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 55, 10, (255, 128, 0))
+			if self.game.useAI:
+				self.drawText("You Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 50, 10, (255, 128, 0))
+			else:
+				self.drawText("Black Won! " + str(self.game.blackTiles) + ":" + str(self.game.whiteTiles), self.font, self.screen, 50, 10, (255, 128, 0))
 		elif self.game.victory == 2:
-			self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 55, 10, (255, 128, 0))
+			if self.game.useAI:
+				self.drawText("AI Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 50, 10, (255, 128, 0))
+			else:
+				self.drawText("White Won! " + str(self.game.whiteTiles) + ":" + str(self.game.blackTiles), self.font, self.screen, 50, 10, (255, 128, 0))
 
 		# update display
 		pygame.display.update()
@@ -148,7 +154,7 @@ class Game_Engine(object):
 			try:
 				self.game.playerMove(chessman_x, chessman_y)
 			except othello.IllegalMove as e:
-				print("Illegal Move" + e.message)
+				print("Illegal Move " + e.message)
 			except Exception as e:
 				raise
 

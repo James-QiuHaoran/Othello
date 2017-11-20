@@ -52,7 +52,7 @@ class Othello(object):
 
 		# check whether the block has been occupied
 		if self.board[x][y] != 0:
-			raise IllegalMove("Block has already been occupied!")
+			raise IllegalMove(" - Block has already been occupied!")
 		else:
 			# place the piece and flip necessary pieces
 			numFlipped = self.placePiece(self.board, x, y, self.player, PLAYMODE=True)
@@ -67,6 +67,12 @@ class Othello(object):
 			blackTiles = sum(1 for tile in allTiles if tile == 1)
 			print("[Console MSG] Current state - empty: " + str(emptyTiles) + " white: " + str(whiteTiles) + " black: " + str(blackTiles))
 			
+			if self.debug:
+				for x in range(0, 8):
+					for y in range(0, 8):
+						print(str(self.board[x][y]) + " ", end = '')
+					print('')
+
 			# no moves left to make
 			if whiteTiles < 1 or blackTiles < 1 or emptyTiles < 1:
 				self.endGame(whiteTiles, blackTiles)
@@ -88,7 +94,7 @@ class Othello(object):
 				else:
 					if self.debug:
 						print("Player " + str(self.player) + " can move, then move!")
-					if self.useAI:
+					if self.useAI and self.player == 2:
 						self.ai.performMove()
 					# this player can move, move
 					self.changed = True
